@@ -5,26 +5,43 @@
 require("data.table")
 require("rpart")
 require("rpart.plot")
-
+?rpart
 #Aqui se debe poner la carpeta de SU computadora local
-setwd("D:\\gdrive\\Austral2022R\\")  #Establezco el Working Directory
+setwd("C:/Users/bddra/Desktop/MAESTRIA _DS/Labdeimp_I")  #Establezco el Working Directory
 
 #cargo los datos de 202011 que es donde voy a ENTRENAR el modelo
 dtrain  <- fread("./datasets/paquete_premium_202011.csv")
 
+names(dtrain)# muestra los nombres de las columnas
+
+dtrain[cpayroll_trx == '0', .(sum(ctarjeta_visa_debitos_automaticos)), by = cproductos]
+
+dtrain[ , .N, tpaquete1]
+dtrain[ , .N, tpaquete2]
+dtrain[ , .N, tpaquete7]
+dtrain[ , .N, tpaquete9]
+
+ans <- dtrain[, .N,list(tpaquete1,tpaquete2,tpaquete7,tpaquete9)]
+ans
+
 #genero el modelo,  aqui se construye el arbol
+
 modelo  <- rpart("clase_ternaria ~ .",  #quiero predecir clase_ternaria a partir de el resto de las variables
                  data = dtrain,
                  xval=0,
-                 cp=        -0.3,   #esto significa no limitar la complejidad de los splits
-                 minsplit=  80,     #minima cantidad de registros para que se haga el split
-                 minbucket=  1,     #tamaño minimo de una hoja
-                 maxdepth=   4 )    #profundidad maxima del arbol
+                 cp=        -0.00001,   #esto significa no limitar la complejidad de los splits
+                 minsplit=  980,     #minima cantidad de registros para que se haga el split
+                 minbucket=  260,     #tamaño minimo de una hoja
+                 maxdepth=   23)    #profundidad maxima del arbol
 
 
 #grafico el arbol
 prp(modelo, extra=101, digits=5, branch=1, type=4, varlen=0, faclen=0)
+library("rattle")
+fancyRpartPlot(modelo,caption = NULL)
+modelo
 
+summary(modelo, cp = 1)
 
 #Ahora aplico al modelo  a los datos de 202101  y genero la salida para kaggle
 
@@ -54,3 +71,6 @@ dir.create( "./labo/exp/KA2001" )
 fwrite( entrega, 
         file= "./labo/exp/KA2001/K101_001.csv", 
         sep= "," )
+
+
+

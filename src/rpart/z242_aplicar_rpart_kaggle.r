@@ -8,14 +8,14 @@ require("rpart.plot")
 
 #Aqui debe cambiar los parametros por los que desea probar
 
-param_basicos  <- list( "cp"=          -1,  #complejidad minima
-                        "minsplit"=   300,     #minima cantidad de registros en un nodo para hacer el split
-                        "minbucket"=  150,     #minima cantidad de registros en una hoja
-                        "maxdepth"=     6 )    #profundidad máxima del arbol
+param_basicos  <- list( "cp"=          -0.00001,  #complejidad minima
+                        "minsplit"=   980,     #minima cantidad de registros en un nodo para hacer el split
+                        "minbucket"=  257,     #minima cantidad de registros en una hoja
+                        "maxdepth"=     8 )    #profundidad máxima del arbol
 
 
 #Aqui se debe poner la carpeta de SU computadora local
-setwd("D:\\gdrive\\Austral2022R\\")  #Establezco el Working Directory
+setwd("C:/Users/bddra/Desktop/MAESTRIA _DS/Labdeimp_I")  #Establezco el Working Directory
 
 #cargo los datos de 202011 que es donde voy a ENTRENAR el modelo
 dtrain  <- fread("./datasets/paquete_premium_202011.csv")

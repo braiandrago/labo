@@ -1,4 +1,4 @@
-#esqueleto de grid search
+#esqueleto de grid search (dejo los valores de la primer corrida - tiene valores demás)
 #se espera que los alumnos completen lo que falta para recorrer TODOS cuatro los hiperparametros 
 
 rm( list=ls() )  #Borro todos los objetos
@@ -8,7 +8,7 @@ require("data.table")
 require("rpart")
 require("parallel")
 
-ksemillas  <- c(102191, 200177, 410551, 552581, 892237) #reemplazar por las propias semillas
+ksemillas  <- c(931811, 917869, 197089, 119131, 484207) #reemplazar por las propias semillas
 
 #------------------------------------------------------------------------------
 #particionar agrega una columna llamada fold a un dataset que consiste en una particion estratificada segun agrupa
@@ -28,7 +28,7 @@ particionar  <- function( data,  division, agrupa="",  campo="fold", start=1, se
 ArbolEstimarGanancia  <- function( semilla, param_basicos )
 {
   #particiono estratificadamente el dataset
-  particionar( dataset, division=c(70,30), agrupa="clase_ternaria", seed= semilla )  #Cambiar por la primer semilla de cada uno !
+  particionar( dataset, division=c(70,30), agrupa="clase_ternaria", seed= 931811 )  #Cambiar por la primer semilla de cada uno !
 
   #genero el modelo
   modelo  <- rpart("clase_ternaria ~ .",     #quiero predecir clase_ternaria a partir del resto
@@ -45,7 +45,7 @@ ArbolEstimarGanancia  <- function( semilla, param_basicos )
   #cada columna es el vector de probabilidades 
 
 
-  #calculo la ganancia en testing  qu es fold==2
+  #calculo la ganancia en testing  que es fold==2
   ganancia_test  <- dataset[ fold==2, 
                              sum( ifelse( prediccion[, "BAJA+2"]  >  1/60,
                                          ifelse( clase_ternaria=="BAJA+2", 59000, -1000 ),
@@ -74,7 +74,7 @@ ArbolesMontecarlo  <- function( semillas, param_basicos )
 #------------------------------------------------------------------------------
 
 #Aqui se debe poner la carpeta de la computadora local
-setwd("D:\\gdrive\\Austral2022R\\")   #Establezco el Working Directory
+setwd("C:/Users/bddra/Desktop/MAESTRIA _DS/Labdeimp_I")   #Establezco el Working Directory
 
 #cargo los datos
 dataset  <- fread("./datasets/paquete_premium_202011.csv")
@@ -92,6 +92,8 @@ archivo_salida  <- "./labo/exp/HT2020/gridsearch.txt"
 #la forma que no suceda lo anterior es con append=TRUE
 cat( file=archivo_salida,
      sep= "",
+     "min_bucket", "\t",
+     "cp_val", "\t",
      "max_depth", "\t",
      "min_split", "\t",
      "ganancia_promedio", "\n")
@@ -99,15 +101,19 @@ cat( file=archivo_salida,
 
 #itero por los loops anidados para cada hiperparametro
 
-for( vmax_depth  in  c( 4, 6, 8, 10, 12, 14 )  )
+for( vmin_bucket  in  c(5, 8, 25, 75, 300, 500, 700)  )
 {
-for( vmin_split  in  c( 1000, 800, 600, 400, 200, 100, 50, 20, 10 )  )
+for( val_cp  in  c(-0.5-0.4,-0.3,-0.2,-0.1, 0.1, 0.2, )  )
+{
+for( vmax_depth  in  c(4,6,8, 10, 12, 16, 20, 50, 750, 1000)  )
+{
+for( vmin_split  in  c(2000, 1000,800, 600, 400, 200, 100, 50, 20, 10)  )
 {
 
   #notar como se agrega
-  param_basicos  <- list( "cp"=         -0.5,       #complejidad minima
+  param_basicos  <- list( "cp"=         val_cp,       #complejidad minima
                           "minsplit"=  vmin_split,  #minima cantidad de registros en un nodo para hacer el split
-                          "minbucket"=  5,          #minima cantidad de registros en una hoja
+                          "minbucket"=  vmin_bucket,          #minima cantidad de registros en una hoja
                           "maxdepth"=  vmax_depth ) #profundidad máxima del arbol
 
   #Un solo llamado, con la semilla 17
@@ -117,9 +123,14 @@ for( vmin_split  in  c( 1000, 800, 600, 400, 200, 100, 50, 20, 10 )  )
   cat(  file=archivo_salida,
         append= TRUE,
         sep= "",
+        vmin_bucket, "\t",
+        val_cp, "\t",
         vmax_depth, "\t",
         vmin_split, "\t",
         ganancia_promedio, "\n"  )
 
 }
 }
+}
+}
+

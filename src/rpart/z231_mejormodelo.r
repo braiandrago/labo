@@ -9,7 +9,7 @@ require("data.table")
 require("rpart")
 require("parallel")
 
-ksemillas  <- c( 102191, 200177, 410551, 552581, 892237 ) #reemplazar por las propias semillas
+ksemillas  <- c( 931811, 917869, 197089, 119131, 484207 ) #reemplazar por las propias semillas
 
 #------------------------------------------------------------------------------
 #particionar agrega una columna llamada fold a un dataset que consiste en una particion estratificada segun agrupa
@@ -46,7 +46,7 @@ ArbolEstimarGanancia  <- function( semilla, param_basicos )
   #cada columna es el vector de probabilidades 
 
 
-  #calculo la ganancia en testing  qu es fold==2
+  #calculo la ganancia en testing  que es fold==2
   ganancia_test  <- dataset[ fold==2, 
                              sum( ifelse( prediccion[, "BAJA+2"]  >  1/60,
                                          ifelse( clase_ternaria=="BAJA+2", 59000, -1000 ),
@@ -73,7 +73,7 @@ ArbolesMontecarlo  <- function( semillas,  param_basicos )
 #------------------------------------------------------------------------------
 
 #Aqui se debe poner la carpeta de la computadora local
-setwd("D:\\gdrive\\Austral2022R\\")   #Establezco el Working Directory
+setwd("C:/Users/bddra/Desktop/MAESTRIA _DS/Labdeimp_I")   #Establezco el Working Directory
 #cargo los datos
 
 dataset  <- fread("./datasets/paquete_premium_202011.csv")
