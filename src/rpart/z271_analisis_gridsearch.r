@@ -10,7 +10,9 @@ require("rpart.plot")
 setwd("C:/Users/bddra/Desktop/MAESTRIA _DS/Labdeimp_I")  #Establezco el Working Directory
 
 #cargo la salida del Grid Seach, verifique que corresponda a la carpeta donde dejó el resultado
-dtrain  <- fread("./labo/exp/HT2020/gridsearch_prueba.txt")
+dtrain  <- fread("./labo/exp/HT2020/gridsearch_uniondepruebas_ord.txt")
+
+#dtrain[  , cociente    :=  minbucket/min_split ]
 
 #genero el modelo,  aqui se construye el arbol
 #este sera un arbol de REGRESION ya que la variable objetivo, ganancia_promedio,  es una variable continua
@@ -35,3 +37,8 @@ pdf( archivo_salida, paper="a4r" )
 prp(modelo, extra=101, digits=5, branch=1, type=4, varlen=0, faclen=0)
 dev.off()
 
+#Diferentes formas de reportar las variables importantes:
+library(caret)       # meta engine for decision tree application
+library(vip)      
+vip(modelo, num_features = 40, bar = FALSE)
+modelo$variable.importance
