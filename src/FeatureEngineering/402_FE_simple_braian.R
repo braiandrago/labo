@@ -11,12 +11,27 @@ gc()
 
 require("data.table")
 
+##PRIMERO CARGO EL DATASET PARA IR VISUALIZANDOLO ANTES DE LAS MODIFICACIONES
+#setwd( "C:/Users/bddra/Desktop/MAESTRIA _DS/Labdeimp_I" )
+#dataset0  <- fread("./datasets/paquete_premium_202011.csv")
 
 
 EnriquecerDataset  <- function( dataset , arch_destino )
 {
   
   #INICIO de la seccion donde se deben hacer cambios con variables nuevas
+  
+  #ALGUNAS VARIABLES NUEVAS  PARA PROBAR
+  dataset[  , ctrx_edad_n := ctrx_quarter/cliente_edad ]
+  dataset[  , ctrx_antig_n := ctrx_quarter/cliente_antiguedad ]
+  dataset[  , ctrx_cpayroll_n := ctrx_quarter/cpayroll_trx ]
+  dataset[  , cpayroll_mpay_n := cpayroll_trx/mpayroll ]
+  dataset[  , prestamos_perso_n := mprestamos_personales/ mcuentas_saldo ]
+  dataset[  , rentabilidad_edad_n := mrentabilidad_annual/cliente_edad]
+  
+  #OTRA PRUEBA:Casificacion de los clientes del 1 al 3 donde 1 son los que tienen antiguedad menor a 12 meses
+  dataset[  , cliente_prueba_antig_n := cliente_antiguedad ]
+  dataset[  , cliente_prueba_antig_n := ifelse(cliente_antiguedad<=12,1,ifelse(cliente_antiguedad>=36,3,2))]
   
   #creo un ctr_quarter que tenga en cuenta cuando los clientes hace 3 menos meses que estan
   dataset[  , ctrx_quarter_normalizado := ctrx_quarter ]
@@ -140,7 +155,12 @@ dataset2  <- fread("./datasets/paquete_premium_202101.csv")
 # FE  representa  Feature Engineering
 dir.create( "./labo/exp/",  showWarnings = FALSE ) 
 dir.create( "./labo/exp/FE4020/", showWarnings = FALSE )
-setwd("D:\\gdrive\\Austral2022R\\labo\\exp\\FE4020\\")   #Establezco el Working Directory DEL EXPERIMENTO
+setwd("C:/Users/bddra/Desktop/MAESTRIA _DS/Labdeimp_I/labo/exp/FE4020/")   #Establezco el Working Directory DEL EXPERIMENTO
 
 EnriquecerDataset( dataset1, "paquete_premium_202011_ext.csv" )
 EnriquecerDataset( dataset2, "paquete_premium_202101_ext.csv" )
+
+
+
+
+
