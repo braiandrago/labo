@@ -286,7 +286,7 @@ AgregarVariables  <- function( dataset )
   dataset[ , sum_pfijos := rowSums( cbind( mplazo_fijo_dolares,  mplazo_fijo_pesos) , na.rm=TRUE ) ]
   dataset[ , sum_invers := rowSums( cbind( minversion1_pesos,  minversion1_dolares, minversion2) , na.rm=TRUE ) ]
   dataset[ , tot_invers := rowSums( cbind( sum_pfijos,  sum_invers) , na.rm=TRUE ) ]
-  dataset[ , prom_invers_tot:= ifelse(cinversiones == 0, NA, tot_invers / cant_invers) ]
+  dataset[ , prom_invers_tot:= ifelse(cant_invers == 0, NA, tot_invers / cant_invers) ]
   
   #TENENCIA: INVERSION/(INV + LIQUIDEZ) (% de inversiones sobre tenencia total) (BRAIAN)
   dataset[ , tenencia := rowSums( cbind( tot_invers,  liquid_tot) , na.rm=TRUE ) ]
