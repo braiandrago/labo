@@ -9,6 +9,11 @@ require("data.table")
 require("mlflow")
 
 #------------------------------------------------------------------------------
+#variables globales
+
+EXP_MLFLOW_INICIADO  <- FALSE
+
+#------------------------------------------------------------------------------
 #Estoy al inicio del log, luego de grabar los titulos
 #inicializo el ambiente de mlflow
 
@@ -564,15 +569,23 @@ exp_log  <- function( reg, arch=NA, folder="./", ext=".txt", verbose=TRUE )
   archivo  <- arch
   if( is.na(arch) )  archivo  <- paste0(  folder, substitute( reg), ext )
 
+  #Inicio mlflow de ser necesario
+  if( ! EXP_MLFLOW_INICIADO )
+  {
+    exp_mlflow_iniciar( )
+    EXP_MLFLOW_INICIADO  <<- TRUE
+  }
+
+
   if( !file.exists( archivo ) )  #Escribo los titulos
   {
     linea  <- paste0( "experimento\t",
                       "fecha\t", 
                       paste( list.names(reg), collapse="\t" ), "\n" )
 
-    cat( linea, file=archivo )
+    #cat( linea, file=archivo )
 
-    exp_mlflow_iniciar( )
+    #exp_mlflow_iniciar( )
   }
 
   linea  <- paste0( EXP$experiment$name, "\t",
