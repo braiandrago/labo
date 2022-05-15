@@ -583,7 +583,7 @@ exp_log  <- function( reg, arch=NA, folder="./", ext=".txt", verbose=TRUE )
                       "fecha\t", 
                       paste( list.names(reg), collapse="\t" ), "\n" )
 
-    #cat( linea, file=archivo )
+    cat( linea, file=archivo )
 
     #exp_mlflow_iniciar( )
   }
