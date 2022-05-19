@@ -1,5 +1,9 @@
+# script a pedido de Maite San Martin  y Lucila Molfino
+# para cada iteracion bayesiana grba la evaluacion en test del modelo
+# atencion que hay validation y test, los datos de test NO se usan para optimizar ningun hiperparametro
+# lamentablemente NO esta implementado el pedido para el caso de cross validation
+
 #Optimización bayesiana  LightGBM
-# To do list:   MLflow Tracking
 #               Permitir que no haga Bayesian Optimization cuando no hay rangos
 
 #limpio la memoria
@@ -111,12 +115,22 @@ EstimarGanancia_lightgbm  <- function( x )
   prediccion  <- predict( modelo_train, 
                           data.matrix( dataset_test[ , campos_buenos, with=FALSE]) )
 
-  tbl  <- dataset_test[ , list(clase01) ]
+  tbl  <- dataset_test[ ,
+                       c( PARAM$const$campo_id, PARAM$const$campo_periodo, PARAM$const$campo_clase, "clase01"), 
+                       with= FALSE ]
+
   tbl[ , prob := prediccion ]
   ganancia_test  <- tbl[ prob >= prob_corte, 
                          sum( ifelse( clase01, PARAM$const$POS_ganancia, PARAM$const$NEG_ganancia ) )]
 
   cantidad_test_normalizada  <- test_multiplicador * tbl[ prob >= prob_corte, .N ]
+
+  tbl[  , ganancia := ifelse( clase01, PARAM$const$POS_ganancia, PARAM$const$NEG_ganancia ) ]
+  tbl[  , envio :=  as.integer( prob >= prob_corte ) ]
+
+  fwrite( tbl,
+          file= paste0( PARAM$files$output$testeval, GLOBAL_iteracion , ".csv"),
+          sep= "\t" )
 
   rm( tbl )
   gc()
@@ -220,8 +234,8 @@ EstimarGanancia_lightgbmCV  <- function( x )
     param_impo$num_iterations  <- modelocv$best_iter
 
     modelo  <- lgb.train( data= dtrain,
-                       param=  param_impo,
-                       verbose= -100 )
+                          param=  param_impo,
+                          verbose= -100 )
 
     tb_importancia    <- as.data.table( lgb.importance( modelo ) )
 
@@ -241,7 +255,7 @@ EstimarGanancia_lightgbmCV  <- function( x )
   xx$ganancia  <- ganancia_normalizada
   xx$iteracion_bayesiana  <- GLOBAL_iteracion
 
-  exp_log( xx,  arch= PARAM$files$output$BOlog )
+  loguear( xx,  arch= PARAM$files$output$BOlog )
 
   return( ganancia_normalizada )
 }
